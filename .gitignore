@@ -1,0 +1,35 @@
+#编译成class文件不提交
+*.class
+
+#包文件不提交
+*.war
+*.ear
+
+#kdiff3 ingore
+*.orig
+
+#maven ingore
+target/
+
+#eclipse ingore
+.settings/
+.project
+.classpatch
+
+#idea ingore
+.idea/
+/idea/
+*.ipr
+*.iml
+*.iws
+
+#temp file
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+
+#System ingore
+.DS_Store
+Thumbs.db
