@@ -42,9 +42,8 @@ public class UserController {
      * @param session  登录session（过期时间）
      * @return
      */
-    @PostMapping("login.do")
-    @ResponseBody
-    public Res<User> login(@RequestParam String username, @RequestParam String password, HttpSession session) {
+    @PostMapping(value = "login.do",produces = "application/json;charset=UTF-8")
+    public Res<User> login(String username, String password, HttpSession session) {
         //先判断是否存在该用户，true-存在，false-不存在
         boolean existUsername = iUserService.checkUsername(username);
         if (!existUsername)
