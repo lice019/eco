@@ -1,6 +1,7 @@
 package com.eco.controller.portal;
 
 import com.eco.common.Const;
+import com.eco.common.HttpState;
 import com.eco.common.Res;
 import com.eco.common.TokenCache;
 import com.eco.pojo.User;
@@ -29,10 +30,6 @@ public class UserController {
     private IUserService iUserService;
 
 
-    @PostMapping("hello.do")
-    public String hello() {
-        return "hello";
-    }
 
     /**
      * 用户登录(login in)
@@ -42,19 +39,19 @@ public class UserController {
      * @param session  登录session（过期时间）
      * @return
      */
-    @PostMapping(value = "login.do",produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "login.do", produces = "application/json;charset=UTF-8")
     public Res<User> login(String username, String password, HttpSession session) {
         //先判断是否存在该用户，true-存在，false-不存在
         boolean existUsername = iUserService.checkUsername(username);
         if (!existUsername)
-            return Res.error(HttpStatus.BAD_REQUEST.value(), "用户名不存在，请先注册");
+            return Res.error(HttpState.PARAM_ERROR.getStatus(), HttpState.PARAM_ERROR.setMessage("用户名不存在，请先注册"));
         User loginUser = iUserService.login(username, password);
         if (loginUser != null) {
             session.setAttribute(Const.CURRENT_USER, loginUser);
-            return Res.success(HttpStatus.OK.value(), "登录成功");
+            return Res.success(HttpState.SUCCESS.getStatus(), HttpState.SUCCESS.setMessage("登录成功"));
         }
 
-        return Res.error(HttpStatus.BAD_REQUEST.value(), "登录失败，用户名或密码错误");
+        return Res.error(HttpState.PARAM_ERROR.getStatus(), HttpState.PARAM_ERROR.setMessage("用户名或密码错误"));
     }
 
     /**
@@ -67,9 +64,9 @@ public class UserController {
     public Res<String> logout(HttpSession session) {
         if (session.getAttribute(Const.CURRENT_USER) != null) {
             session.removeAttribute(Const.CURRENT_USER);
-            return Res.error(HttpStatus.OK.value(), "登出成功");
+            return Res.error(HttpState.SUCCESS.getStatus(), HttpState.SUCCESS.setMessage("登出成功"));
         }
-        return Res.error(HttpStatus.BAD_REQUEST.value(), "网络异常");
+        return Res.error(HttpState.UNKNOWN_ERROR.getStatus(), HttpState.UNKNOWN_ERROR.setMessage("网络异常"));
     }
 
 
@@ -107,8 +104,8 @@ public class UserController {
     public Res<User> getUserInfo(HttpSession session) {
         User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
         if (currentUser != null)
-            return Res.success(HttpStatus.OK.value(), currentUser);
-        return Res.error(HttpStatus.BAD_REQUEST.value(), "用户未登录，无法获取当前用户信息");
+            return Res.success(HttpState.SUCCESS.getStatus(), currentUser);
+        return Res.error(HttpState.UNKNOWN_ERROR.getStatus(), "用户未登录，无法获取当前用户信息");
     }
 
     /**

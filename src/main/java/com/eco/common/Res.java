@@ -14,7 +14,7 @@ import java.io.Serializable;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL) //保证key为null时，则消失
 public class Res<T> implements Serializable {
 
-    private Integer status;   //响应状态
+    private Integer status;   //响应状态  0-请求成功（参数正确） 1-请求失败（参数不正确）
     private String msg;       //响应消息
     private T data;           //响应数据
 

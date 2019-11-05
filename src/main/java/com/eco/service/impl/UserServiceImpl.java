@@ -1,6 +1,7 @@
 package com.eco.service.impl;
 
 import com.eco.common.Const;
+import com.eco.common.HttpState;
 import com.eco.common.Res;
 import com.eco.mapper.UserMapper;
 import com.eco.pojo.User;
@@ -69,20 +70,20 @@ public class UserServiceImpl implements IUserService {
         //判断该用户是否存在
         int checkUsername = userMapper.checkUsername(user.getUsername());
         if (checkUsername > 0)
-            return Res.error(HttpStatus.BAD_REQUEST.value(), "用户名已存在");
+            return Res.error(HttpState.PARAM_ERROR.getStatus(), HttpState.PARAM_ERROR.setMessage("用户名已存在"));
         //判断email是否存在
         int checkEmail = userMapper.checkEmail(user.getEmail());
         if (checkEmail > 0)
-            return Res.error(HttpStatus.CONFLICT.value(), "email已存在");
+            return Res.error(HttpState.PARAM_ERROR.getStatus(), HttpState.PARAM_ERROR.setMessage("email已存在"));
         //设置为普通用户
         user.setRole(Const.Role.ROLE_CUSTOMER);
         //MD5加密
         user.setPassword(MD5Util.MD5EncodeUtf8(user.getPassword()));
         int row = userMapper.insert(user);
         if (row == 0)
-            return Res.success(HttpStatus.OK.value(), "注册失败");
+            return Res.error(HttpState.DATABASE_ERROR.getStatus(),HttpState.DATABASE_ERROR.setMessage("注册失败"));
 
-        return Res.error(HttpStatus.BAD_REQUEST.value(), "注册成功");
+        return Res.success(HttpState.SUCCESS.getStatus(),HttpState.SUCCESS.setMessage("注册成功"));
     }
 
     public Res<String> checkValid(String criteria, String type) {
@@ -92,16 +93,16 @@ public class UserServiceImpl implements IUserService {
             if (Const.USERNAME.equals(type)) {
                 resultCount = userMapper.checkUsername(criteria);
                 if (resultCount > 0)
-                    return Res.error(HttpStatus.BAD_REQUEST.value(), "用户名已存在");
+                    return Res.error(HttpState.PARAM_ERROR.getStatus(), "用户名已存在");
 
             }
             if (Const.EMAIL.equals(type)) {
                 resultCount = userMapper.checkEmail(criteria);
                 if (resultCount > 0)
-                    return Res.error(HttpStatus.BAD_REQUEST.value(), "email已存在");
+                    return Res.error(HttpState.PARAM_ERROR.getStatus(), "email已存在");
             }
         } else {
-            return Res.error(HttpStatus.BAD_REQUEST.value(), "参数错误");
+            return Res.error(HttpState.PARAM_ERROR.getStatus(), "参数错误");
         }
         return Res.success(HttpStatus.OK.value(), "检验成功");
     }
